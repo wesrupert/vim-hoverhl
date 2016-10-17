@@ -16,6 +16,8 @@ if !exists("g:hoverHlStandardMappings")
     let g:hoverHlStandardMappings = 1
 endif
 
+" let g:hoverHlCaseSensitive = 1
+
 " let g:hoverHlCustomFg = #XXXXXX
 " let g:hoverHlCustomBg = #XXXXXX
 let g:hoverHlFgColor = ''
@@ -86,12 +88,11 @@ function! s:hoverHlNavigate(direction) " {{{
     endif
 
     if exists('b:hoverHlCurrentWord')
-        let pat = call s:getPatternForWord(b:hoverHlCurrentWord)
         let searchFlag = a:direction
         if a:direction == 'f'
             let searchFlag = ''
         endif
-        call search(pat, l:searchFlag)
+        call search(s:getPatternForWord(b:hoverHlCurrentWord), l:searchFlag)
     else
         if a:direction == 'f'
             silent! normal! n
@@ -117,8 +118,7 @@ function! s:highlightHoveredWord() " {{{
         call s:clearHighlightedWord()
     endif
 
-    let pat = s:getPatternForWord(l:currentWord)
-    call matchadd('HoverHlWord', l:pat, 1, s:matchId)
+    call matchadd('HoverHlWord', s:getPatternForWord(l:currentWord), 1, s:matchId)
     let w:hoverHlMatchDefined = 1
     let b:hoverHlCurrentWord = l:currentWord
 endfunction " }}}
