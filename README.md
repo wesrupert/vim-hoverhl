@@ -28,14 +28,19 @@ function HoverHlBackward() " Moves to the previous instance of the highlighted w
 
 These functions are also available in `<plug>` form.
 
-The plugin uses the current colorscheme's search highlight colors by default. If you'd prefer different colors, you can set the following in your vimrc:
+The plugin uses the current colorscheme's `Search` highlight colors by default. If you'd prefer colors from a different highlight group, or different colors altogether, you can set the following in your vimrc:
 
 ```vim
-let g:hoverHlCustomBg = '#RRGGBB'
-let g:hoverHlCustomFg = '#RRGGBB'
+" Different highlight group
+let g:hoverHlMatchGroup = 'CursorLine'
 
-" Alternatively, to leave the foreground color untouched when hovering:
+" Custom colors
+let g:hoverHlCustomFg = '#RRGGBB'
+let g:hoverHlCustomBg = '#RRGGBB'
+
+" Alternatively, to leave the foreground/background color untouched when hovering:
 let g:hoverHlCustomFg = ''
+let g:hoverHlCustomBg = ''
 ```
 
 Finally, you can also use custom case sensitivity by setting `g:hoverHlCaseSensitive = 1`.

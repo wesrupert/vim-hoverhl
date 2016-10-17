@@ -16,6 +16,10 @@ if !exists("g:hoverHlStandardMappings")
     let g:hoverHlStandardMappings = 1
 endif
 
+if !exists("g:hoverHlMatchGroup")
+    let g:hoverHlMatchGroup = 'Search'
+endif
+
 " let g:hoverHlCaseSensitive = 1
 
 " let g:hoverHlCustomFg = #XXXXXX
@@ -64,19 +68,15 @@ endfunction " }}}
 " Private Methods {{{ {{{
 
 function! s:setHoverHlColor() " {{{
-    if exists('g:hoverHlCustomBg') && match(g:hoverHlCustomBg, '#[0-9A-Fa-f]\\{6}')
+    if exists('g:hoverHlCustomBg') && (g:hoverHlCustomBg == '' || match(g:hoverHlCustomBg, '#[0-9A-Fa-f]\\{6}'))
         let g:hoverHlBgColor = g:hoverHlCustomBg
     else
-        " Use 'Search' highlight group color
-        let g:hoverHlBgColor = printf('%s', synIDattr(hlID('Search'), 'bg#'))
+        let g:hoverHlBgColor = printf('%s', synIDattr(hlID(g:hoverHlMatchGroup), 'bg#'))
     endif
     if exists('g:hoverHlCustomFg') && (g:hoverHlCustomFg == '' || match(g:hoverHlCustomBg, '#[0-9A-Fa-f]\\{6}'))
         let g:hoverHlFgColor = g:hoverHlCustomFg
     else
-        " Color schemes frequently don't define a foreground color, so this can
-        " return ''. This implies that the background color won't interfere with
-        " any of the other foreground colors, so it's okay for this to be ''.
-        let g:hoverHlFgColor = printf('%s', synIDattr(hlID('Search'), 'fg#'))
+        let g:hoverHlFgColor = printf('%s', synIDattr(hlID(g:hoverHlMatchGroup), 'fg#'))
     endif
     call s:setHighlight()
 endfunction " }}}
@@ -161,12 +161,22 @@ function! s:setHighlight() " {{{
         let ui = 'gui'
     endif
 
-    if g:hoverHlFgColor == ''
-        execute 'hi! def HoverHlWord ' . ui . 'bg=' . g:hoverHlBgColor
-    else
-        execute 'hi! def HoverHlWord ' . ui . 'bg=' . g:hoverHlBgColor . ' ' . ui . 'fg=' . g:hoverHlFgColor
+    let fg = ''
+    if g:hoverHlFgColor != ''
+        let fg = ' ' . ui . 'fg=' . g:hoverHlFgColor
     endif
 
+    let bg = ''
+    if g:hoverHlBgColor != ''
+        let bg = ' ' . ui . 'bg=' . g:hoverHlBgColor
+    endif
+
+    if (l:bg == '' && l:fg == '')
+        let bg = ' ' . ui . 'bg=#000000'
+        let fg = ' ' . ui . 'fg=#ffffff'
+    endif
+
+    execute 'hi! def HoverHlWord' . l:fg . l:bg
     let s:highlightSet = 1
 endfunction " }}}
 
