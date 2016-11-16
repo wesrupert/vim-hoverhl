@@ -13,8 +13,13 @@ Using pathogen:
 - `git clone https://wesrupert.github.com/vim-hoverhl.git {temp dir of choice}`
 - Move the `hoverhl/start/hoverhl` directory into your `bundle` directory
 
-
 ## Configuration
+
+By default, this plugin is enabled for all filetypes. You can set a list of filetypes to have it only highlight in those files by setting `g:hoverHlEnabledFiletypes`:
+
+```vim
+let g:hoverHlEnabledFiletypes = [ 'c', 'cpp', 'cs', 'sh', 'vim', '...' ]
+```
 
 By default, the mappings `<leader>n` `<leader>N` and `<leader>K` are defined for you. If you would prefer your own mappings, you can set `g:hoverHlStandardMappings = 0`, then define mappings to any of the following functions:
 
@@ -28,11 +33,11 @@ function HoverHlBackward() " Moves to the previous instance of the highlighted w
 
 These functions are also available in `<plug>` form.
 
-The plugin uses the current colorscheme's `Search` highlight colors by default. If you'd prefer colors from a different highlight group, or different colors altogether, you can set the following in your vimrc:
+The plugin uses the current colorscheme's `CursorLine` highlight colors by default. If you'd prefer colors from a different highlight group, or different colors altogether, you can set the following in your vimrc:
 
 ```vim
 " Different highlight group
-let g:hoverHlMatchGroup = 'CursorLine'
+let g:hoverHlMatchGroup = 'Search'
 
 " Custom colors
 let g:hoverHlCustomFg = '#RRGGBB'
@@ -43,7 +48,11 @@ let g:hoverHlCustomFg = ''
 let g:hoverHlCustomBg = ''
 ```
 
-Finally, you can also use custom case sensitivity by setting `g:hoverHlCaseSensitive = 1`.
+Finally, you can also use custom case sensitivity by setting `g:hoverHlCaseSensitive`.
+
+```vim
+let g:hoverHlCaseSensitive = 1
+```
 
 ## Author
 

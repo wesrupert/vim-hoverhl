@@ -17,7 +17,7 @@ if !exists("g:hoverHlStandardMappings")
 endif
 
 if !exists("g:hoverHlMatchGroup")
-    let g:hoverHlMatchGroup = 'Search'
+    let g:hoverHlMatchGroup = 'CursorLine'
 endif
 
 " let g:hoverHlCaseSensitive = 1
@@ -30,7 +30,7 @@ let g:hoverHlBgColor = ''
 " Script Variables {{{
 
 let s:matchId = 101248
-let s:enabled = 1
+let s:enabledDefault = 1
 
 " }}}
 
@@ -39,16 +39,16 @@ let s:enabled = 1
 " Public Methods {{{
 
 function! HoverHlEnable() " {{{
-    let s:enabled = 1
+    let b:hoverHlEnabled = 1
 endfunction " }}}
 
 function! HoverHlDisable() " {{{
     call s:clearHighlightedWord()
-    let s:enabled = 0
+    let b:hoverHlEnabled = 0
 endfunction " }}}
 
 function! HoverHlToggle() " {{{
-    if s:enabled
+    if s:isEnabled()
         call HoverHlDisable()
     else
         call HoverHlEnable()
@@ -103,7 +103,7 @@ function! s:hoverHlNavigate(direction) " {{{
 endfunction " }}}
 
 function! s:highlightHoveredWord() " {{{
-    if s:enabled == 0
+    if !s:isEnabled()
         return
     endif
     call s:ensureSetHighlight()
@@ -180,9 +180,23 @@ function! s:setHighlight() " {{{
     let s:highlightSet = 1
 endfunction " }}}
 
+function s:isEnabled() " {{{
+    if !exists('b:hoverHlEnabled')
+        return s:enabledDefault
+    endif
+    return b:hoverHlEnabled
+endfunction " }}}
+
 " }}} }}}
 
 " Plugin bindings {{{
+
+if exists('g:hoverHlEnabledFiletypes')
+    augroup HoverHlFiletypes
+        let s:enabledDefault = 0
+        exe 'au FileType '.join(g:hoverHlEnabledFiletypes, ',').' let b:hoverHlEnabled = 1'
+    augroup END
+endif
 
 if g:hoverHlStandardMappings && !hasmapto('HoverHl')
     nnoremap <silent> <leader>K :call HoverHlToggle()<cr>
