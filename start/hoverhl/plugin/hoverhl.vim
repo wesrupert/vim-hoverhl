@@ -55,12 +55,12 @@ function! HoverHlToggle() " {{{
     endif
 endfunction " }}}
 
-function! HoverHlForward() " {{{
-    call s:hoverHlNavigate('f')
+function! HoverHlForward(count) " {{{
+    call s:hoverHlNavigate('', a:count)
 endfunction " }}}
 
-function! HoverHlBackward() " {{{
-    call s:hoverHlNavigate('b')
+function! HoverHlBackward(count) " {{{
+    call s:hoverHlNavigate('b', a:count)
 endfunction " }}}
 
 " }}}
@@ -81,23 +81,21 @@ function! s:setHoverHlColor() " {{{
     call s:setHighlight()
 endfunction " }}}
 
-function! s:hoverHlNavigate(direction) " {{{
-    if a:direction != 'f' && a:direction != 'b'
-        echom "'" . a:direction . "' is not a valid direction! Use 'f' or 'b'."
+function! s:hoverHlNavigate(direction, count) " {{{
+    if a:direction != '' && a:direction != 'b'
+        echom "'" . a:direction . "' is not a valid direction! Use '' or 'b'."
         return
     endif
 
     if exists('b:hoverHlCurrentWord')
-        let searchFlag = a:direction
-        if a:direction == 'f'
-            let searchFlag = ''
-        endif
-        call search(s:getPatternForWord(b:hoverHlCurrentWord), l:searchFlag)
+        for i in range(1, a:count)
+            call search(s:getPatternForWord(b:hoverHlCurrentWord), a:direction)
+        endfor
     else
-        if a:direction == 'f'
-            silent! normal! n
+        if a:direction == ''
+            execute 'normal '.a:count.'n'
         else
-            silent! normal! N
+            execute 'normal '.a:count.'N'
         endif
     endif
 endfunction " }}}
@@ -198,18 +196,36 @@ if exists('g:hoverHlEnabledFiletypes')
     augroup END
 endif
 
-if g:hoverHlStandardMappings && !hasmapto('HoverHl')
-    nnoremap <silent> <leader>K :call HoverHlToggle()<cr>
-    nnoremap <silent> <leader>n :call HoverHlForward()<cr>
-    nnoremap <silent> <leader>N :call HoverHlBackward()<cr>
+command! -nargs=0 HoverHlToggle   call HoverHlToggle()
+command! -nargs=0 HoverHlEnable   call HoverHlEnable()
+command! -nargs=0 HoverHlDisable  call HoverHlDisable()
+command! -nargs=1 HoverHlForward  call HoverHlForward(<args>)
+command! -nargs=1 HoverHlBackward call HoverHlBackward(<args>)
+
+if g:hoverHlStandardMappings
+    if !hasmapto('HoverHlToggle')
+        nnoremap <silent> <leader>K :call HoverHlToggle()<cr>
+    endif
+    if !hasmapto('HoverHlEnable')
+        nnoremap <silent> <leader>K :call HoverHlEnable()<cr>
+    endif
+    if !hasmapto('HoverHlDisable')
+        nnoremap <silent> <leader>K :call HoverHlDisable()<cr>
+    endif
+    if !hasmapto('HoverHlForward')
+        nnoremap <silent> <leader>n :<c-u>HoverHlForward(v:count1)<cr>
+    endif
+    if !hasmapto('HoverHlBackward')
+        nnoremap <silent> <leader>N :<c-u>HoverHlBackward(v:count1)<cr>
+    endif
 endif
 
 try
-    nnoremap <silent> <unique> <script> <Plug>HoverHlDisable  :call HoverHlDisable()<cr>
-    nnoremap <silent> <unique> <script> <Plug>HoverHlEnable   :call HoverHlEnable()<cr>
-    nnoremap <silent> <unique> <script> <Plug>HoverHlToggle   :call HoverHlToggle()<cr>
-    nnoremap <silent> <unique> <script> <Plug>HoverHlForward  :call HoverHlForward()<cr>
-    nnoremap <silent> <unique> <script> <Plug>HoverHlBackward :call HoverHlBackward()<cr>
+    nnoremap <silent> <unique> <script> <Plug>HoverHlToggle   :HoverHlToggle()<cr>
+    nnoremap <silent> <unique> <script> <Plug>HoverHlEnable   :HoverHlEnable()<cr>
+    nnoremap <silent> <unique> <script> <Plug>HoverHlDisable  :HoverHlDisable()<cr>
+    nnoremap <silent> <unique> <script> <Plug>HoverHlForward  :<c-u>HoverHlForward(v:count1)<cr>
+    nnoremap <silent> <unique> <script> <Plug>HoverHlBackward :<c-u>HoverHlBackward(v:count1)<cr>
 catch /E227/
 endtry
 
