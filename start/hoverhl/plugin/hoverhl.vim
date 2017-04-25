@@ -204,13 +204,13 @@ command! -nargs=1 HoverHlBackward call HoverHlBackward(<args>)
 
 if g:hoverHlStandardMappings
     if !hasmapto('HoverHlToggle')
-        nnoremap <silent> <leader>K :call HoverHlToggle()<cr>
+        nnoremap <silent> <leader>// :call HoverHlToggle()<cr>
     endif
     if !hasmapto('HoverHlEnable')
-        nnoremap <silent> <leader>K :call HoverHlEnable()<cr>
+        nnoremap <silent> <leader>/e :call HoverHlEnable()<cr>
     endif
     if !hasmapto('HoverHlDisable')
-        nnoremap <silent> <leader>K :call HoverHlDisable()<cr>
+        nnoremap <silent> <leader>/d :call HoverHlDisable()<cr>
     endif
     if !hasmapto('HoverHlForward')
         nnoremap <silent> <leader>n :<c-u>HoverHlForward(v:count1)<cr>
