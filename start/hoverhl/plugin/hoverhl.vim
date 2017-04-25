@@ -12,6 +12,8 @@ endif
 
 " Variables {{{
 
+let g:hoverHlEnabledDefault = 1
+
 if !exists("g:hoverHlStandardMappings")
     let g:hoverHlStandardMappings = 1
 endif
@@ -30,7 +32,6 @@ let g:hoverHlBgColor = ''
 " Script Variables {{{
 
 let s:matchId = 101248
-let s:enabledDefault = 1
 
 " }}}
 
@@ -180,7 +181,7 @@ endfunction " }}}
 
 function s:isEnabled() " {{{
     if !exists('b:hoverHlEnabled')
-        return s:enabledDefault
+        return g:hoverHlEnabledDefault
     endif
     return b:hoverHlEnabled
 endfunction " }}}
@@ -190,9 +191,9 @@ endfunction " }}}
 " Plugin bindings {{{
 
 if exists('g:hoverHlEnabledFiletypes')
+    let g:hoverHlEnabledDefault = 0
     augroup HoverHlFiletypes
-        let s:enabledDefault = 0
-        exe 'au FileType '.join(g:hoverHlEnabledFiletypes, ',').' let b:hoverHlEnabled = 1'
+        execute 'au FileType '.join(g:hoverHlEnabledFiletypes, ',').' let b:hoverHlEnabled = 1'
     augroup END
 endif
 
@@ -221,11 +222,11 @@ if g:hoverHlStandardMappings
 endif
 
 try
-    nnoremap <silent> <unique> <script> <Plug>HoverHlToggle   :HoverHlToggle()<cr>
-    nnoremap <silent> <unique> <script> <Plug>HoverHlEnable   :HoverHlEnable()<cr>
-    nnoremap <silent> <unique> <script> <Plug>HoverHlDisable  :HoverHlDisable()<cr>
-    nnoremap <silent> <unique> <script> <Plug>HoverHlForward  :<c-u>HoverHlForward(v:count1)<cr>
-    nnoremap <silent> <unique> <script> <Plug>HoverHlBackward :<c-u>HoverHlBackward(v:count1)<cr>
+    nnoremap <unique> <script> <Plug>HoverHlToggle   :HoverHlToggle()<cr>
+    nnoremap <unique> <script> <Plug>HoverHlEnable   :HoverHlEnable()<cr>
+    nnoremap <unique> <script> <Plug>HoverHlDisable  :HoverHlDisable()<cr>
+    nnoremap <unique> <script> <Plug>HoverHlForward  :<c-u>HoverHlForward(v:count1)<cr>
+    nnoremap <unique> <script> <Plug>HoverHlBackward :<c-u>HoverHlBackward(v:count1)<cr>
 catch /E227/
 endtry
 
