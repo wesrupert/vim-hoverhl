@@ -17,10 +17,10 @@ Using pathogen:
 
 ### Activation
 
-By default, this plugin is enabled for all filetypes. You can set a list of filetypes to have it only highlight in those files by setting `g:hoverHlEnabledFiletypes`:
+By default, this plugin is enabled for all filetypes. You can set a list of filetypes to have it only highlight in those files by setting `g:hoverhl#enabled_filetypes`:
 
 ```vim
-let g:hoverHlEnabledFiletypes = [ 'c', 'cpp', 'cs', 'sh', 'vim', '...' ]
+let g:hoverhl#enabled_filetypes = [ 'c', 'cpp', 'cs', 'sh', 'vim', '...' ]
 ```
 
 ### Mappings
@@ -35,7 +35,7 @@ HoverHlForward(n)  " Moves to the nth next instance of the highlighted word
 HoverHlBackward(n) " Moves to the nth previous instance of the highlighted word
 ```
 
-These functions are also available in `command` and `map <plug>` forms. Alternatively, you can set `g:hoverHlStandardMappings = 0` if you would like to remove the default bindings entirely.
+These functions are also available in `command` and `map <plug>` forms. Alternatively, you can set `g:hoverhl#standard_mappings = 0` if you would like to remove the default bindings entirely.
 
 ### Colors
 
@@ -43,20 +43,22 @@ The plugin uses the current colorscheme's `CursorLine` highlight colors by defau
 
 ```vim
 " Different highlight group
-let g:hoverHlMatchGroup = 'Search'
+let g:hoverhl#match_group = 'Search'
 
 " Custom colors.
 " If these are set, they take precedence over the highlight group!
-let g:hoverHlCustomFg = '#RRGGBB'
-let g:hoverHlCustomBg = '#RRGGBB'
+let g:hoverhl#custom_fg = '#RRGGBB'
+let g:hoverhl#custom_bg = '#RRGGBB'
 
 " Alternatively, to leave the foreground/background color untouched when hovering:
-let g:hoverHlCustomFg = ''
-let g:hoverHlCustomBg = ''
+let g:hoverhl#custom_fg = ''
+let g:hoverhl#custom_bg = ''
 ```
 ### Miscellaneous
 
-If you would like to only ever manually enable this plugin, you can set `g:hoverHlEnabledDefault = 0`, and only enable on a per-buffer basis. Finally, you can also use custom case sensitivity by setting `g:hoverHlCaseSensitive = 0 or 1`.
+- If you would like to only ever manually enable this plugin, you can set `g:hoverhl#enabled_default = 0`, and only enable on a per-buffer basis.
+- If you want to only have highlights in the current buffer, you can set `g:hoverhl#clear_on_leave = 1`.
+- If you want case sensitivity that doesn't follow smartcase/ignorecase, set `g:hoverhl#case_sensitive = 0 or 1`.
 
 
 ## Author
