@@ -41,11 +41,13 @@ let s:matchId = 101248
 
 function! HoverHlEnable() " {{{
     let b:hoverHlEnabled = 1
+    echom '[hoverhl enabled]'
 endfunction " }}}
 
 function! HoverHlDisable() " {{{
     call s:clearHighlightedWord()
     let b:hoverHlEnabled = 0
+    echom '[hoverhl disabled]'
 endfunction " }}}
 
 function! HoverHlToggle() " {{{
