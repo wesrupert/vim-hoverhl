@@ -6,12 +6,12 @@ Hover highlight (hoverhl) is a vim plugin that automatically highlights the word
 
 Using vim 8+:
 
-- `git clone https://wesrupert.github.com/vim-hoverhl.git ~/.vim/pack/hoverhl`
+- `git clone https://wesrupert.github.com/vim-hoverhl.git ~/.vim/pack/hoverhl/start/hoverhl`
 
-Using pathogen:
+Using package managers:
 
-- `git clone https://wesrupert.github.com/vim-hoverhl.git {temp dir of choice}`
-- Map or move the `hoverhl/start/hoverhl` directory into your `bundle` directory
+- Using pathogen: `git clone https://wesrupert.github.com/vim-hoverhl.git bundle/hoverhl`
+- Using vim-plug: `Plug 'wesrupert/vim-hoverhl'`
 
 ## Configuration
 
