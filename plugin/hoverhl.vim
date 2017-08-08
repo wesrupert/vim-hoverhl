@@ -178,7 +178,7 @@ function! s:OnBufLeave() " {{{
     endif
 endfunction " }}}
 
-function s:IsEnabled() " {{{
+function! s:IsEnabled() " {{{
     if !exists('b:hoverhl_enabled')
         return g:hoverhl#enabled_default
     endif
