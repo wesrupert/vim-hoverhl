@@ -158,10 +158,10 @@ function! s:EnsureSetHighlight() " {{{
 endfunction " }}}
 
 function! s:SetHighlight() " {{{
-    let ui = has('gui_running') ? 'gui' : 'cterm'
+    let ui = has('nvim') || has('gui') || has('gui_running') ? 'gui' : 'cterm'
+
     let fg = s:fg_color != '' ? ' '.ui.'fg='.s:fg_color : ''
     let bg = s:bg_color != '' ? ' '.ui.'bg='.s:bg_color : ''
-
     if (bg == '' && fg == '')
         let bg = ' '.ui.'bg=#000000'
         let fg = ' '.ui.'fg=#ffffff'
