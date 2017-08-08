@@ -141,10 +141,10 @@ function! s:GetPatternForWord(word) " {{{
 
     if ignoreCase
         let currentWord = tolower(a:word)
-        let case = '\C'
+        let case = '\c'
     else
         let currentWord = a:word
-        let case = '\c'
+        let case = '\C'
     endif
 
     return case . '\V\<' . escape(currentWord, '\') . '\>'
