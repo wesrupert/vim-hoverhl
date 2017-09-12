@@ -12,22 +12,21 @@ endif
 
 " Variables {{{
 
-let g:hoverhl#enabled_default   = 1
+" Global scope
+let g:hoverhl#enabled_default   = get(g:, 'hoverhl#enabled_default', 1)
 let g:hoverhl#standard_mappings = get(g:, 'hoverhl#standard_mappings', 1)
-let g:hoverhl#match_group       = get(g:, 'hoverhl#match_group', 'CursorLine')
-
 " Unset: g:hoverhl#case_sensitive {Values: 0,1}
 " Unset: g:hoverhl#clear_on_leave {Values: 0,1}
-" Unset: g:hoverhl#custom_fg      {Format: #XXXXXX}
-" Unset: g:hoverhl#custom_bg      {Format: #XXXXXX}
+" Unset: g:hoverhl#match_group    {Values: '{highlightgroup}'}
+" Unset: g:hoverhl#custom_fg      {Values: '', '{colorname}'}
+" Unset: g:hoverhl#custom_bg      {Values: '', '{colorname}'}
+" Unset: g:hoverhl#custom_guifg   {Values: '', '#RRGGBB', '{colorname}'}
+" Unset: g:hoverhl#custom_guibg   {Values: '', '#RRGGBB', '{colorname}'}
+" Unset: g:hoverhl#custom_ctermfg {Values: '', 0-15, '{colorname}'}
+" Unset: g:hoverhl#custom_ctermbg {Values: '', 0-15, '{colorname}'}
 
-" Script Variables {{{
-
-let s:match_id = 607261
-let s:fg_color = ''
-let s:bg_color = ''
-
-" }}}
+" Script scope
+let s:match_id = 0124314
 
 " }}}
 
@@ -45,7 +44,7 @@ function! HoverHlDisable() " {{{
 endfunction " }}}
 
 function! HoverHlToggle() " {{{
-    if s:IsEnabled()
+    if get(b:, 'hoverhl_enabled', g:hoverhl#enabled_default)
         call HoverHlDisable()
     else
         call HoverHlEnable()
@@ -64,23 +63,8 @@ endfunction " }}}
 
 " Private Methods {{{ {{{
 
-function! s:SetColor() " {{{
-    if exists('g:hoverhl#custom_bg') && (g:hoverhl#custom_bg == '' || match(g:hoverhl#custom_bg, '#[0-9A-Fa-f]\\{6}'))
-        let s:bg_color = g:hoverhl#custom_bg
-    else
-        let s:bg_color = printf('%s', synIDattr(hlID(g:hoverhl#match_group), 'bg#'))
-    endif
-    if exists('g:hoverhl#custom_fg') && (g:hoverhl#custom_fg == '' || match(g:hoverhl#custom_bg, '#[0-9A-Fa-f]\\{6}'))
-        let s:fg_color = g:hoverhl#custom_fg
-    else
-        let s:fg_color = printf('%s', synIDattr(hlID(g:hoverhl#match_group), 'fg#'))
-    endif
-    call s:SetHighlight()
-endfunction " }}}
-
 function! s:Navigate(direction, count) " {{{
     if a:direction != '' && a:direction != 'b'
-        echom "'".a:direction."' is not a valid direction! Use '' or 'b'."
         return
     endif
 
@@ -90,28 +74,25 @@ function! s:Navigate(direction, count) " {{{
         endfor
     else
         try
-            if a:direction == ''
-                execute 'normal '.a:count.'n'
-            else
-                execute 'normal '.a:count.'N'
-            endif
+            execute 'normal '.a:count.(a:direction == '' ? 'n' : 'N')
         catch /E486/
-            " Strip callstack from the search error message
+            " Strip the callstack from the search error message
             echohl ErrorMsg | echom matchstr(v:exception, '.486.*$') | echohl None
         endtry
-
     endif
 endfunction " }}}
 
 function! s:HighlightHoveredWord() " {{{
-    if !s:IsEnabled()
+    if !get(b:, 'hoverhl_enabled', g:hoverhl#enabled_default)
         return
     endif
-    call s:EnsureSetHighlight()
+    if !exists('s:highlight_set')
+        call s:SetHighlight()
+    endif
 
     " Only highlight when on a valid word character
     let currentWord = expand('<cword>') . ''
-    if !len(currentWord) || matchstr(getline('.'), '\%'.col('.').'c.') !~? '\w'
+    if !len(currentWord) || matchstr(getline('.'), '\%'.col('.').'c.') !~? '\k'
         call s:ClearHighlightedWord()
         return
     endif
@@ -127,50 +108,37 @@ endfunction " }}}
 
 function! s:ClearHighlightedWord() " {{{
     silent! call matchdelete(s:match_id)
-    silent! unlet b:hoverhl_current_word
     silent! unlet w:hoverhl_match_defined
+    silent! unlet b:hoverhl_current_word
 endfunction " }}}
 
 function! s:GetPatternForWord(word) " {{{
-    let ignoreCase = 0
-    if exists('g:hoverhl#case_sensitive')
-        let ignoreCase = !g:hoverhl#case_sensitive
-    else
-        let ignoreCase = &ignorecase && (!&smartcase || (match(a:word, '\u') == -1))
-    endif
-
-    if ignoreCase
-        let currentWord = tolower(a:word)
-        let case = '\c'
-    else
+    if get(g:, 'hoverhl#case_sensitive', !&ignorecase || (&smartcase && (match(a:word, '\u') != -1)))
         let currentWord = a:word
         let case = '\C'
+    else
+        let currentWord = tolower(a:word)
+        let case = '\c'
     endif
 
-    return case . '\V\<' . escape(currentWord, '\') . '\>'
-endfunction " }}}
-
-function! s:EnsureSetHighlight() " {{{
-    if !exists('s:highlight_set')
-        call s:SetColor()
-        call s:SetHighlight()
-    endif
+    return case.'\V\<'.escape(currentWord, '\').'\>'
 endfunction " }}}
 
 function! s:SetHighlight() " {{{
-    let ui = has('nvim') || has('gui') || has('gui_running') ? 'gui' : 'cterm'
+    let l:match_group   = get(g:, 'hoverhl#match_group', 'CursorLine')
 
-    let fg = s:fg_color != '' ? ' '.ui.'fg='.s:fg_color : ''
-    let bg = s:bg_color != '' ? ' '.ui.'bg='.s:bg_color : ''
-    if (bg == '' && fg == '')
-        let bg = ' '.ui.'bg=#000000'
-        let fg = ' '.ui.'fg=#ffffff'
-    endif
+    let l:guifg_color   = get(g:, 'hoverhl#custom_guifg',   get(g:, 'hoverhl#custom_fg', printf('%s', synIDattr(hlID(l:match_group), 'fg', 'gui'  ))))
+    let l:guibg_color   = get(g:, 'hoverhl#custom_guibg',   get(g:, 'hoverhl#custom_bg', printf('%s', synIDattr(hlID(l:match_group), 'bg', 'gui'  ))))
+    let l:ctermfg_color = get(g:, 'hoverhl#custom_ctermfg', get(g:, 'hoverhl#custom_fg', printf('%s', synIDattr(hlID(l:match_group), 'fg', 'cterm'))))
+    let l:ctermbg_color = get(g:, 'hoverhl#custom_ctermbg', get(g:, 'hoverhl#custom_bg', printf('%s', synIDattr(hlID(l:match_group), 'bg', 'cterm'))))
 
-    execute 'hi! def HoverHlWord'.fg.bg
+    let l:guifg   = l:guifg_color   != '' ? ' guifg='.l:guifg_color     : ''
+    let l:guibg   = l:guibg_color   != '' ? ' guibg='.l:guibg_color     : ''
+    let l:ctermfg = l:ctermfg_color != '' ? ' ctermfg='.l:ctermfg_color : ''
+    let l:ctermbg = l:ctermbg_color != '' ? ' ctermbg='.l:ctermbg_color : ''
+    execute 'hi! def HoverHlWord'.l:guifg.l:guibg.l:ctermfg.l:ctermbg
     let s:highlight_set = 1
 endfunction " }}}
-
 
 function! s:OnBufLeave() " {{{
     if get(g:, 'hoverhl#clear_on_leave', 0)
@@ -178,23 +146,9 @@ function! s:OnBufLeave() " {{{
     endif
 endfunction " }}}
 
-function! s:IsEnabled() " {{{
-    if !exists('b:hoverhl_enabled')
-        return g:hoverhl#enabled_default
-    endif
-    return b:hoverhl_enabled
-endfunction " }}}
-
 " }}} }}}
 
 " Plugin bindings {{{
-
-if exists('g:hoverhl#enabled_filetypes')
-    let g:hoverhl#enabled_default = 0
-    augroup HoverHlFiletypes
-        execute 'autocmd FileType '.join(g:hoverhl#enabled_filetypes, ',').' let b:hoverhl_enabled = 1'
-    augroup END
-endif
 
 command! -nargs=0 HoverHlToggle   call HoverHlToggle()
 command! -nargs=0 HoverHlEnable   call HoverHlEnable()
@@ -230,9 +184,14 @@ catch /E227/
 endtry
 
 augroup HoverHl
-    autocmd ColorScheme * call s:SetColor()
+    autocmd!
+    autocmd ColorScheme * call s:SetHighlight()
     autocmd CursorHold  * call s:HighlightHoveredWord()
     autocmd BufLeave    * call s:OnBufLeave()
+    if exists('g:hoverhl#enabled_filetypes')
+        let g:hoverhl#enabled_default = 0
+        execute 'autocmd FileType '.join(g:hoverhl#enabled_filetypes, ',').' let b:hoverhl_enabled = 1'
+    endif
 augroup END
 
 " }}}

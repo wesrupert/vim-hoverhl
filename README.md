@@ -47,13 +47,26 @@ let g:hoverhl#match_group = 'Search'
 
 " Custom colors.
 " If these are set, they take precedence over the highlight group!
-let g:hoverhl#custom_fg = '#RRGGBB'
-let g:hoverhl#custom_bg = '#RRGGBB'
+
+" Agnostic: Colorname
+let g:hoverhl#custom_fg = 'LightBlue'
+let g:hoverhl#custom_bg = 'LightBlue'
+" GUI: Colorname, #RRGGBB
+let g:hoverhl#custom_guifg = 'LightBlue'
+let g:hoverhl#custom_guibg = '#ADD8E6'
+" CTERM: Colorname, Colorindex
+let g:hoverhl#custom_ctermfg = 'LightBlue'
+let g:hoverhl#custom_ctermbg = 9
 
 " Alternatively, to leave the foreground/background color untouched when hovering:
 let g:hoverhl#custom_fg = ''
 let g:hoverhl#custom_bg = ''
+let g:hoverhl#custom_guifg = ''
+let g:hoverhl#custom_guibg = ''
+let g:hoverhl#custom_ctermfg = ''
+let g:hoverhl#custom_ctermbg = ''
 ```
+
 ### Miscellaneous
 
 - If you would like to only ever manually enable this plugin, you can set `g:hoverhl#enabled_default = 0`, and only enable on a per-buffer basis.

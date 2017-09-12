@@ -1,0 +1,81 @@
+*hoverhl.txt*	For Vim version 8.0/Nvim	Last change: 2017 August 25
+
+		  Hover H(igh)L(ight)    by Wes Rupert~
+
+
+==============================================================================
+CONTENTS                                                  *hoverhl-contents*
+
+    01. Intro and Features.................................. |hoverhl-intro|
+    02. Commands ........................................ |hoverhl-commands|
+    03. Configuration .............................. |hoverhl-configuration|
+
+==============================================================================
+INTRODUCTION AND FEATURES                                    *hoverhl-intro*
+
+Hover highlight (hoverhl) is a vim plugin that automatically highlights the
+word under your cursor and lets you navigate though other instances of the
+highlighted word. After installing the plugin, whenever you stop moving the
+cursor for `&updatetime` milliseconds, the word underneath the cursor will be
+highlighted throughout the document.
+
+You can then navigate to other instances of the word by using `<leader>n` and
+`<leader>N` as you would normally use `n` and `N` on a search. You can toggle the
+plugin on the fly by using `<leader>//`. Alternatively, use `<leader>/e` to only
+enable the plugin, and `<leader>/d` to only disable the plugin.
+
+==============================================================================
+COMMANDS                                                  *hoverhl-commands*
+
+HoverHlToggle()    " Enables/disables the plugin
+HoverHlEnable()    " Enables the plugin
+HoverHlDisable()   " Disables the plugin
+HoverHlForward(n)  " Moves to the nth next instance of the highlighted word
+HoverHlBackward(n) " Moves to the nth previous instance of the highlighted word
+
+These functions are also available in `command` and `map <plug>` forms.
+
+==============================================================================
+CONFIGURATION                                        *hoverhl-configuration*
+
+By default, this plugin is enabled for all filetypes. You can set a list of
+filetypes to have it only highlight in those files by setting
+`g:hoverhl#enabled_filetypes` to the desired types: >
+  let g:hoverhl#enabled_filetypes = [ 'c', 'cpp', 'js', 'sh', 'vim', '...' ]
+<If you would like to remove the default bindings entirely, you can set
+`g:hoverhl#standard_mappings` to 0. You will have to then create your own
+bindings, or call the commands yourself!
+
+The plugin uses the current colorscheme's `CursorLine` highlight colors by
+default. If you'd prefer colors from a different highlight group, or
+different colors altogether, you can set the following in your vimrc: >
+  let g:hoverhl#match_group = 'Search'
+<Or, if you'd prefer custom colors entirely: >
+  " UI-agnostic: Colorname
+  let g:hoverhl#custom_fg = 'LightBlue'
+  let g:hoverhl#custom_bg = 'LightBlue'
+  " GUI: Colorname, #RRGGBB
+  let g:hoverhl#custom_guifg = 'LightBlue'
+  let g:hoverhl#custom_guibg = '#ADD8E6'
+  " CTERM: Colorname, Colorindex
+  let g:hoverhl#custom_ctermfg = 'LightBlue'
+  let g:hoverhl#custom_ctermbg = 9
+<Alternatively, to leave the fore/background color untouched when hovering: >
+  let g:hoverhl#custom_fg = ''
+  let g:hoverhl#custom_bg = ''
+  let g:hoverhl#custom_guifg = ''
+  let g:hoverhl#custom_guibg = ''
+  let g:hoverhl#custom_ctermfg = ''
+  let g:hoverhl#custom_ctermbg = ''
+<NOTE: If these are set, they take precedence over the highlight group!
+
+If you would like to only ever manually enable this plugin, you can set
+`g:hoverhl#enabled_default = 0`, and only enable on a per-buffer basis.
+
+If you want to only have highlights in the current buffer, you can set
+`g:hoverhl#clear_on_leave` to 1.
+
+If you want case sensitivity that doesn't follow smartcase/ignorecase, set
+`g:hoverhl#case_sensitive` to 0 or 1.
+
+ vim:tw=78:ts=8:ft=help:norl:
