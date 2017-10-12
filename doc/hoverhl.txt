@@ -57,16 +57,16 @@ different colors altogether, you can set the following in your vimrc: >
   " GUI: Colorname, #RRGGBB
   let g:hoverhl#custom_guifg = 'LightBlue'
   let g:hoverhl#custom_guibg = '#ADD8E6'
+  let g:hoverhl#custom_guisp = '#0088FF'
   " CTERM: Colorname, Colorindex
   let g:hoverhl#custom_ctermfg = 'LightBlue'
   let g:hoverhl#custom_ctermbg = 9
 <Alternatively, to leave the fore/background color untouched when hovering: >
   let g:hoverhl#custom_fg = ''
-  let g:hoverhl#custom_bg = ''
-  let g:hoverhl#custom_guifg = ''
-  let g:hoverhl#custom_guibg = ''
-  let g:hoverhl#custom_ctermfg = ''
-  let g:hoverhl#custom_ctermbg = ''
+<Finally, you can customize the decorations via comma-separated strings: >
+  let g:hoverhl#custom_dc = 'underline'
+  let g:hoverhl#custom_guidc = 'bold,italics'
+  let g:hoverhl#custom_guidc = ''
 <NOTE: If these are set, they take precedence over the highlight group!
 
 If you would like to only ever manually enable this plugin, you can set

@@ -18,12 +18,17 @@ let g:hoverhl#standard_mappings = get(g:, 'hoverhl#standard_mappings', 1)
 " Unset: g:hoverhl#case_sensitive {Values: 0,1}
 " Unset: g:hoverhl#clear_on_leave {Values: 0,1}
 " Unset: g:hoverhl#match_group    {Values: '{highlightgroup}'}
+" Unset: g:hoverhl#custom_dc      {Values: '', '[underline|bold|italic],...'}
 " Unset: g:hoverhl#custom_fg      {Values: '', '{colorname}'}
 " Unset: g:hoverhl#custom_bg      {Values: '', '{colorname}'}
+" Unset: g:hoverhl#custom_guidc   {Values: '', '[underline|bold|italic],...'}
 " Unset: g:hoverhl#custom_guifg   {Values: '', '#RRGGBB', '{colorname}'}
 " Unset: g:hoverhl#custom_guibg   {Values: '', '#RRGGBB', '{colorname}'}
+" Unset: g:hoverhl#custom_guisp   {Values: '', '#RRGGBB', '{colorname}'}
+" Unset: g:hoverhl#custom_ctermdc {Values: '', '[underline|bold|italic],...'}
 " Unset: g:hoverhl#custom_ctermfg {Values: '', 0-15, '{colorname}'}
 " Unset: g:hoverhl#custom_ctermbg {Values: '', 0-15, '{colorname}'}
+" Unset: g:hoverhl#debug          {Values: 0,1}
 
 " Script scope
 let s:match_id = 0124314
@@ -125,19 +130,56 @@ function! s:GetPatternForWord(word) " {{{
 endfunction " }}}
 
 function! s:SetHighlight() " {{{
-    let l:match_group   = get(g:, 'hoverhl#match_group', 'CursorLine')
+    let l:default_group = 'CursorLine'
+    let l:match_group   = get(g:, 'hoverhl#match_group', l:default_group)
+    if !hlexists(l:match_group)
+        let l:match_group = l:default_group
+    endif
+    let l:synID = synIDtrans(hlID(l:match_group))
 
-    let l:guifg_color   = get(g:, 'hoverhl#custom_guifg',   get(g:, 'hoverhl#custom_fg', printf('%s', synIDattr(hlID(l:match_group), 'fg', 'gui'  ))))
-    let l:guibg_color   = get(g:, 'hoverhl#custom_guibg',   get(g:, 'hoverhl#custom_bg', printf('%s', synIDattr(hlID(l:match_group), 'bg', 'gui'  ))))
-    let l:ctermfg_color = get(g:, 'hoverhl#custom_ctermfg', get(g:, 'hoverhl#custom_fg', printf('%s', synIDattr(hlID(l:match_group), 'fg', 'cterm'))))
-    let l:ctermbg_color = get(g:, 'hoverhl#custom_ctermbg', get(g:, 'hoverhl#custom_bg', printf('%s', synIDattr(hlID(l:match_group), 'bg', 'cterm'))))
+    let l:hi = {
+        \ 'guidc':   get(g:, 'hoverhl#custom_guidc',   get(g:, 'hoverhl#custom_dc', GetDecorations(        l:synID,       'gui'  ))),
+        \ 'guifg':   get(g:, 'hoverhl#custom_guifg',   get(g:, 'hoverhl#custom_fg', printf('%s', synIDattr(l:synID, 'fg', 'gui'  )))),
+        \ 'guibg':   get(g:, 'hoverhl#custom_guibg',   get(g:, 'hoverhl#custom_bg', printf('%s', synIDattr(l:synID, 'bg', 'gui'  )))),
+        \ 'guisp':   get(g:, 'hoverhl#custom_guisp',   get(g:, 'hoverhl#custom_sp', printf('%s', synIDattr(l:synID, 'sp', 'gui'  )))),
+        \ 'ctermdc': get(g:, 'hoverhl#custom_ctermdc', get(g:, 'hoverhl#custom_dc', GetDecorations(        l:synID,       'cterm'))),
+        \ 'ctermfg': get(g:, 'hoverhl#custom_ctermfg', get(g:, 'hoverhl#custom_fg', printf('%s', synIDattr(l:synID, 'fg', 'cterm')))),
+        \ 'ctermbg': get(g:, 'hoverhl#custom_ctermbg', get(g:, 'hoverhl#custom_bg', printf('%s', synIDattr(l:synID, 'bg', 'cterm')))),
+    \ }
 
-    let l:guifg   = l:guifg_color   != '' ? ' guifg='.l:guifg_color     : ''
-    let l:guibg   = l:guibg_color   != '' ? ' guibg='.l:guibg_color     : ''
-    let l:ctermfg = l:ctermfg_color != '' ? ' ctermfg='.l:ctermfg_color : ''
-    let l:ctermbg = l:ctermbg_color != '' ? ' ctermbg='.l:ctermbg_color : ''
-    execute 'hi! def HoverHlWord'.l:guifg.l:guibg.l:ctermfg.l:ctermbg
+    let l:highlight = (l:hi.guifg   != '' ? ' guifg='.l:hi.guifg     : '').
+                    \ (l:hi.guibg   != '' ? ' guibg='.l:hi.guibg     : '').
+                    \ (l:hi.guisp   != '' ? ' guisp='.l:hi.guisp     : '').
+                    \ (l:hi.guidc   != '' ? ' gui='.l:hi.guidc       : '').
+                    \ (l:hi.ctermfg != '' ? ' ctermfg='.l:hi.ctermfg : '').
+                    \ (l:hi.ctermbg != '' ? ' ctermbg='.l:hi.ctermbg : '').
+                    \ (l:hi.ctermdc != '' ? ' cterm='.l:hi.ctermdc   : '')
+
+    let l:link = ''
+    if l:highlight ==# ''
+        let l:link = ' link'
+        let l:highlight = ' '.l:default_group
+    endif
+    if get(g:, 'hoverhl#debug', 0)
+        echom '[hoverhl: '.l:match_group.' ('.l:synID.') => hi! def'.l:link.' HoverHlWord'.l:highlight.']'
+    endif
+    execute 'hi! def'.l:link.' HoverHlWord'.l:highlight
     let s:highlight_set = 1
+endfunction " }}}
+
+function! GetDecorations(synID, type) " {{{
+    let l:decorations = ['bold', 'italic', 'reverse', 'inverse', 'standout', 'underline', 'undercurl']
+    let l:decorationsString = ''
+    for l:decoration in l:decorations
+        if synIDattr(a:synID, l:decoration, a:type)
+            if l:decorationsString
+                let l:decorationsString .= ','
+            endif
+            let l:decorationsString .= l:decoration
+        endif
+    endfor
+
+    return l:decorationsString
 endfunction " }}}
 
 function! s:OnBufLeave() " {{{

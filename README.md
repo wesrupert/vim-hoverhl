@@ -45,7 +45,7 @@ The plugin uses the current colorscheme's `CursorLine` highlight colors by defau
 " Different highlight group
 let g:hoverhl#match_group = 'Search'
 
-" Custom colors.
+" Custom colors
 " If these are set, they take precedence over the highlight group!
 
 " Agnostic: Colorname
@@ -54,17 +54,18 @@ let g:hoverhl#custom_bg = 'LightBlue'
 " GUI: Colorname, #RRGGBB
 let g:hoverhl#custom_guifg = 'LightBlue'
 let g:hoverhl#custom_guibg = '#ADD8E6'
+let g:hoverhl#custom_guisp = '#0088FF'
 " CTERM: Colorname, Colorindex
 let g:hoverhl#custom_ctermfg = 'LightBlue'
 let g:hoverhl#custom_ctermbg = 9
 
-" Alternatively, to leave the foreground/background color untouched when hovering:
+" Alternatively, to leave that color unchanged when hovering, set it to '':
 let g:hoverhl#custom_fg = ''
-let g:hoverhl#custom_bg = ''
-let g:hoverhl#custom_guifg = ''
-let g:hoverhl#custom_guibg = ''
-let g:hoverhl#custom_ctermfg = ''
-let g:hoverhl#custom_ctermbg = ''
+
+" Custom decorations, separated by commas
+let g:hoverhl#custom_dc = 'underline'
+let g:hoverhl#custom_guidc = 'bold,italics'
+let g:hoverhl#custom_guidc = ''
 ```
 
 ### Miscellaneous
