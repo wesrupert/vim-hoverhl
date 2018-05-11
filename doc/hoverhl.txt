@@ -20,9 +20,11 @@ cursor for `&updatetime` milliseconds, the word underneath the cursor will be
 highlighted throughout the document.
 
 You can then navigate to other instances of the word by using `<leader>n` and
-`<leader>N` as you would normally use `n` and `N` on a search. You can toggle the
-plugin on the fly by using `<leader>//`. Alternatively, use `<leader>/e` to only
-enable the plugin, and `<leader>/d` to only disable the plugin.
+`<leader>N` as you would normally use `n` and `N` on a search. You can also lock
+the hovered word with `<leader>//` to keep it as the current highlight until
+it is unlocked via `<leader>//` again. You can toggle the plugin on the fly by
+using `<leader>/t`. Alternatively, use `<leader>/e` to enable the plugin, and
+`<leader>/d` to disable the plugin.
 
 ==============================================================================
 COMMANDS                                                  *hoverhl-commands*
@@ -30,6 +32,7 @@ COMMANDS                                                  *hoverhl-commands*
 HoverHlToggle()    " Enables/disables the plugin
 HoverHlEnable()    " Enables the plugin
 HoverHlDisable()   " Disables the plugin
+HoverHlLock()      " Locks/unlocks the highlighted word
 HoverHlForward(n)  " Moves to the nth next instance of the highlighted word
 HoverHlBackward(n) " Moves to the nth previous instance of the highlighted word
 
@@ -69,10 +72,10 @@ different colors altogether, you can set the following in your vimrc: >
   let g:hoverhl#custom_guidc = ''
 <NOTE: If these are set, they take precedence over the highlight group!
 
-If you would like to only ever manually enable this plugin, you can set
-`g:hoverhl#enabled_default = 0`, and only enable on a per-buffer basis.
+If you would like to disable automatic loading, you can set
+`g:hoverhl#enabled_default` to 0.
 
-If you want to only have highlights in the current buffer, you can set
+If you want to only show highlights in the current buffer, you can set
 `g:hoverhl#clear_on_leave` to 1.
 
 If you want case sensitivity that doesn't follow smartcase/ignorecase, set

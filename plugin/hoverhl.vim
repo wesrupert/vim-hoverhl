@@ -39,13 +39,14 @@ let s:match_id = 0124314
 
 function! HoverHlEnable() " {{{
     let b:hoverhl_enabled = 1
-    echom '[hoverhl enabled]'
+    echo 'hoverhl: enabled'
 endfunction " }}}
 
 function! HoverHlDisable() " {{{
     call s:ClearHighlightedWord()
-    let b:hoverhl_enabled = 0
-    echom '[hoverhl disabled]'
+    silent let b:hoverhl_enabled = 0
+    silent unlet! b:hoverhl_locked
+    echo 'hoverhl: disabled'
 endfunction " }}}
 
 function! HoverHlToggle() " {{{
@@ -54,6 +55,11 @@ function! HoverHlToggle() " {{{
     else
         call HoverHlEnable()
     endif
+endfunction " }}}
+
+function! HoverHlLock() " {{{
+    let b:hoverhl_locked = !get(b:, 'hoverhl_locked', 0)
+    echo 'hoverhl: '.(b:hoverhl_locked ? '' : 'un').'locked'
 endfunction " }}}
 
 function! HoverHlForward(count) " {{{
@@ -74,9 +80,21 @@ function! s:Navigate(direction, count) " {{{
     endif
 
     if exists('b:hoverhl_current_word')
+        normal m'
+        let l:line = line('.')
+        let l:col = col('.')
         for i in range(1, a:count)
-            call search(s:GetPatternForWord(b:hoverhl_current_word), a:direction)
+             call search(s:GetPatternForWord(b:hoverhl_current_word), a:direction)
         endfor
+        if a:direction == ''
+            if l:line > line('.') || (l:line == line('.') && l:col > col('.'))
+                echohl ErrorMsg | echo 'search hit BOTTOM, continuing at TOP'
+            endif
+        else
+            if l:line < line('.') || (l:line == line('.') && l:col < col('.'))
+                echohl ErrorMsg | echo 'search hit TOP, continuing at BOTTOM'
+            endif
+        endif
     else
         try
             execute 'normal '.a:count.(a:direction == '' ? 'n' : 'N')
@@ -89,6 +107,9 @@ endfunction " }}}
 
 function! s:HighlightHoveredWord() " {{{
     if !get(b:, 'hoverhl_enabled', g:hoverhl#enabled_default)
+        return
+    endif
+    if get(b:, 'hoverhl_locked', 0) && exists('b:hoverhl_current_word')
         return
     endif
     if !exists('s:highlight_set')
@@ -104,6 +125,11 @@ function! s:HighlightHoveredWord() " {{{
 
     if exists('w:hoverhl_match_defined')
         call s:ClearHighlightedWord()
+    endif
+
+    " Don't overrule the standard search highlight
+    if [line('.'), col('.')] == searchpos(@/, 'cn')
+        return
     endif
 
     call matchadd('HoverHlWord', s:GetPatternForWord(currentWord), 1, s:match_id)
@@ -161,7 +187,7 @@ function! s:SetHighlight() " {{{
         let l:highlight = ' '.l:default_group
     endif
     if get(g:, 'hoverhl#debug', 0)
-        echom '[hoverhl: '.l:match_group.' ('.l:synID.') => hi! def'.l:link.' HoverHlWord'.l:highlight.']'
+        echom 'hoverhl: '.l:match_group.' ('.l:synID.') => hi! def'.l:link.' HoverHlWord'.l:highlight
     endif
     execute 'hi! def'.l:link.' HoverHlWord'.l:highlight
     let s:highlight_set = 1
@@ -195,34 +221,30 @@ endfunction " }}}
 command! -nargs=0 HoverHlToggle   call HoverHlToggle()
 command! -nargs=0 HoverHlEnable   call HoverHlEnable()
 command! -nargs=0 HoverHlDisable  call HoverHlDisable()
+command! -nargs=0 HoverHlLock     call HoverHlLock()
 command! -nargs=1 HoverHlForward  call HoverHlForward(<args>)
 command! -nargs=1 HoverHlBackward call HoverHlBackward(<args>)
 
 if g:hoverhl#standard_mappings
-    if !hasmapto('HoverHlToggle')
-        nnoremap <silent> <leader>// :call HoverHlToggle()<cr>
-    endif
-    if !hasmapto('HoverHlEnable')
-        nnoremap <silent> <leader>/e :call HoverHlEnable()<cr>
-    endif
-    if !hasmapto('HoverHlDisable')
-        nnoremap <silent> <leader>/d :call HoverHlDisable()<cr>
-    endif
-    if !hasmapto('HoverHlForward')
-        nnoremap <silent> <leader>n :<c-u>HoverHlForward(v:count1)<cr>
-    endif
-    if !hasmapto('HoverHlBackward')
-        nnoremap <silent> <leader>N :<c-u>HoverHlBackward(v:count1)<cr>
-    endif
+    if !hasmapto('hoverhl-toggle')   | map <silent> \/t <plug>(hoverhl-toggle)|   endif
+    if !hasmapto('hoverhl-enable')   | map <silent> \/e <plug>(hoverhl-enable)|   endif
+    if !hasmapto('hoverhl-disable')  | map <silent> \/d <plug>(hoverhl-disable)|  endif
+    if !hasmapto('hoverhl-lock')     | map <silent> \// <plug>(hoverhl-lock)|     endif
+    if !hasmapto('hoverhl-forward')  | map <silent> \n  <plug>(hoverhl-forward)|  endif
+    if !hasmapto('hoverhl-backward') | map <silent> \N  <plug>(hoverhl-backward)| endif
 endif
 
 try
-    nnoremap <unique> <script> <Plug>HoverHlToggle   :HoverHlToggle()<cr>
-    nnoremap <unique> <script> <Plug>HoverHlEnable   :HoverHlEnable()<cr>
-    nnoremap <unique> <script> <Plug>HoverHlDisable  :HoverHlDisable()<cr>
-    nnoremap <unique> <script> <Plug>HoverHlForward  :<c-u>HoverHlForward(v:count1)<cr>
-    nnoremap <unique> <script> <Plug>HoverHlBackward :<c-u>HoverHlBackward(v:count1)<cr>
-catch /E227/
+    noremap <plug>(hoverhl-toggle)   :HoverHlToggle<cr>
+    noremap <plug>(hoverhl-enable)   :HoverHlEnable<cr>
+    noremap <plug>(hoverhl-disable)  :HoverHlDisable<cr>
+    noremap <plug>(hoverhl-lock)     :HoverHlLock<cr>
+    noremap <plug>(hoverhl-forward)  :<c-u>HoverHlForward v:count1<cr>
+    noremap <plug>(hoverhl-backward) :<c-u>HoverHlBackward v:count1<cr>
+catch
+    if get(g:, 'hoverhl#debug', 0)
+        echohl ErrorMsg | echom v:exception | echohl None
+    endif
 endtry
 
 augroup HoverHl

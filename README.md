@@ -1,6 +1,6 @@
 # Vim - HoverH[*igh*]l[*ight*]
 
-Hover highlight (hoverhl) is a vim plugin that automatically highlights the word under your cursor and lets you navigate though other instances of the highlighted word. After installing the plugin, whenever you stop moving the cursor for `&updatetime` milliseconds, the word underneath the cursor will be highlighted throughout the document. You can then navigate to other instances of the word by using <kbd>&lt;leader&gt;n</kbd> and <kbd>&lt;leader&gt;N</kbd> as you would normally use <kbd>n</kbd> and <kbd>N</kbd> on a search. You can enable/disable the plugin on the fly by using <kbd>&lt;leader&gt;//</kbd> (or <kbd>&lt;leader>/e&gt;</kbd>/<kbd>&lt;leader&gt;/d</kbd> to just enable/disable the plugin, respectively).
+Hover highlight (hoverhl) is a vim plugin that automatically highlights the word under your cursor and lets you navigate though other instances of the highlighted word. After installing the plugin, whenever you stop moving the cursor for `&updatetime` milliseconds, the word underneath the cursor will be highlighted throughout the document. You can then navigate to other instances of the word by using <kbd>&lt;leader&gt;n</kbd> and <kbd>&lt;leader&gt;N</kbd> as you would normally use <kbd>n</kbd> and <kbd>N</kbd> on a search. You can also lock the hovered word with <kbd>&lt;leader&gt;//</kbd> to keep it as the current highlight until it is unlocked via <kbd>&lt;leader&gt;//</kbd> again. You can enable/disable the plugin on the fly by using <kbd>&lt;leader&gt;/t</kbd> (or <kbd>&lt;leader>/e&gt;</kbd>/<kbd>&lt;leader&gt;/d</kbd> to just enable/disable the plugin, respectively).
 
 ## Installation
 
@@ -31,6 +31,7 @@ By default, the aforementioned mappings are defined for you. If you would prefer
 HoverHlToggle()    " Enables/disables the plugin
 HoverHlEnable()    " Enables the plugin
 HoverHlDisable()   " Disables the plugin
+HoverHlLock()      " Locks/unlocks the highlighted word
 HoverHlForward(n)  " Moves to the nth next instance of the highlighted word
 HoverHlBackward(n) " Moves to the nth previous instance of the highlighted word
 ```
@@ -70,8 +71,8 @@ let g:hoverhl#custom_guidc = ''
 
 ### Miscellaneous
 
-- If you would like to only ever manually enable this plugin, you can set `g:hoverhl#enabled_default = 0`, and only enable on a per-buffer basis.
-- If you want to only have highlights in the current buffer, you can set `g:hoverhl#clear_on_leave = 1`.
+- If you would like to disable automatic loading, you can set `g:hoverhl#enabled_default = 0`.
+- If you want to only show highlights in the current buffer, you can set `g:hoverhl#clear_on_leave = 1`.
 - If you want case sensitivity that doesn't follow smartcase/ignorecase, set `g:hoverhl#case_sensitive = 0 or 1`.
 
 
