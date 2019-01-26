@@ -19,12 +19,12 @@ highlighted word. After installing the plugin, whenever you stop moving the
 cursor for `&updatetime` milliseconds, the word underneath the cursor will be
 highlighted throughout the document.
 
-You can then navigate to other instances of the word by using `<leader>n` and
-`<leader>N` as you would normally use `n` and `N` on a search. You can also lock
-the hovered word with `<leader>//` to keep it as the current highlight until
-it is unlocked via `<leader>//` again. You can toggle the plugin on the fly by
-using `<leader>/t`. Alternatively, use `<leader>/e` to enable the plugin, and
-`<leader>/d` to disable the plugin.
+You can then navigate to other instances of the word by using `g/n` and `g/N`
+as you would normally use `n` and `N` on a search. You can also lock the
+hovered word with `g//` to keep it as the current highlight until it is
+unlocked via `g//` again. You can toggle the plugin on the fly by using `g/t`.
+Alternatively, use `g/e` to enable the plugin, and `g/d` to disable the
+plugin.
 
 ==============================================================================
 COMMANDS                                                  *hoverhl-commands*
@@ -81,4 +81,4 @@ If you want to only show highlights in the current buffer, you can set
 If you want case sensitivity that doesn't follow smartcase/ignorecase, set
 `g:hoverhl#case_sensitive` to 0 or 1.
 
- vim:tw=78:ts=8:ft=help:norl:
+vim:tw=78:ts=8:ft=help:norl:noet:

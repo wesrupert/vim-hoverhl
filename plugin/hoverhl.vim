@@ -226,12 +226,12 @@ command! -nargs=1 HoverHlForward  call HoverHlForward(<args>)
 command! -nargs=1 HoverHlBackward call HoverHlBackward(<args>)
 
 if g:hoverhl#standard_mappings
-    if !hasmapto('hoverhl-toggle')   | map <silent> \/t <plug>(hoverhl-toggle)|   endif
-    if !hasmapto('hoverhl-enable')   | map <silent> \/e <plug>(hoverhl-enable)|   endif
-    if !hasmapto('hoverhl-disable')  | map <silent> \/d <plug>(hoverhl-disable)|  endif
-    if !hasmapto('hoverhl-lock')     | map <silent> \// <plug>(hoverhl-lock)|     endif
-    if !hasmapto('hoverhl-forward')  | map <silent> \n  <plug>(hoverhl-forward)|  endif
-    if !hasmapto('hoverhl-backward') | map <silent> \N  <plug>(hoverhl-backward)| endif
+    if !hasmapto('hoverhl-toggle')   | map <silent> g/t <plug>(hoverhl-toggle)|   endif
+    if !hasmapto('hoverhl-enable')   | map <silent> g/e <plug>(hoverhl-enable)|   endif
+    if !hasmapto('hoverhl-disable')  | map <silent> g/d <plug>(hoverhl-disable)|  endif
+    if !hasmapto('hoverhl-lock')     | map <silent> g// <plug>(hoverhl-lock)|     endif
+    if !hasmapto('hoverhl-forward')  | map <silent> g/n <plug>(hoverhl-forward)|  endif
+    if !hasmapto('hoverhl-backward') | map <silent> g/N <plug>(hoverhl-backward)| endif
 endif
 
 try
