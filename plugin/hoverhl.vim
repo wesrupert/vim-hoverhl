@@ -1,5 +1,5 @@
 " --------------------------------------------------------------------
-" This plugin was inspired and based on Luis Vasconcellos' interesting
+" This plugin was inspired by Luis Vasconcellos' interesting
 " words plugin (https://github.com/lfv89/vim-interestingwords).
 "
 " Author: Wes Rupert (wesr@outlook.com)
@@ -12,7 +12,6 @@ endif
 
 " Variables {{{
 
-" Global scope
 let g:hoverhl#enabled_default   = get(g:, 'hoverhl#enabled_default', 1)
 let g:hoverhl#standard_mappings = get(g:, 'hoverhl#standard_mappings', 1)
 " Unset: g:hoverhl#case_sensitive {Values: 0,1}
@@ -30,7 +29,6 @@ let g:hoverhl#standard_mappings = get(g:, 'hoverhl#standard_mappings', 1)
 " Unset: g:hoverhl#custom_ctermbg {Values: '', 0-15, '{colorname}'}
 " Unset: g:hoverhl#debug          {Values: 0,1}
 
-" Script scope
 let s:match_id = 0124314
 
 " }}}
@@ -164,11 +162,11 @@ function! s:SetHighlight() " {{{
     let l:synID = synIDtrans(hlID(l:match_group))
 
     let l:hi = {
-        \ 'guidc':   get(g:, 'hoverhl#custom_guidc',   get(g:, 'hoverhl#custom_dc', GetDecorations(        l:synID,       'gui'  ))),
+        \ 'guidc':   get(g:, 'hoverhl#custom_guidc',   get(g:, 'hoverhl#custom_dc', s:GetDecorations(      l:synID,       'gui'  ))),
         \ 'guifg':   get(g:, 'hoverhl#custom_guifg',   get(g:, 'hoverhl#custom_fg', printf('%s', synIDattr(l:synID, 'fg', 'gui'  )))),
         \ 'guibg':   get(g:, 'hoverhl#custom_guibg',   get(g:, 'hoverhl#custom_bg', printf('%s', synIDattr(l:synID, 'bg', 'gui'  )))),
         \ 'guisp':   get(g:, 'hoverhl#custom_guisp',   get(g:, 'hoverhl#custom_sp', printf('%s', synIDattr(l:synID, 'sp', 'gui'  )))),
-        \ 'ctermdc': get(g:, 'hoverhl#custom_ctermdc', get(g:, 'hoverhl#custom_dc', GetDecorations(        l:synID,       'cterm'))),
+        \ 'ctermdc': get(g:, 'hoverhl#custom_ctermdc', get(g:, 'hoverhl#custom_dc', s:GetDecorations(      l:synID,       'cterm'))),
         \ 'ctermfg': get(g:, 'hoverhl#custom_ctermfg', get(g:, 'hoverhl#custom_fg', printf('%s', synIDattr(l:synID, 'fg', 'cterm')))),
         \ 'ctermbg': get(g:, 'hoverhl#custom_ctermbg', get(g:, 'hoverhl#custom_bg', printf('%s', synIDattr(l:synID, 'bg', 'cterm')))),
     \ }
@@ -193,7 +191,7 @@ function! s:SetHighlight() " {{{
     let s:highlight_set = 1
 endfunction " }}}
 
-function! GetDecorations(synID, type) " {{{
+function! s:GetDecorations(synID, type) " {{{
     let l:decorations = ['bold', 'italic', 'reverse', 'inverse', 'standout', 'underline', 'undercurl']
     let l:decorationsString = ''
     for l:decoration in l:decorations
